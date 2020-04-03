@@ -4,28 +4,40 @@
 
 const express = require('express');
 const mongoDb = require('mongoose');
+const bodyParser = require('body-parser')
+
+/**
+ * Routes Import
+ */
+
+const appRoutes = require('./routes/app');
+const userRoutes = require('./routes/usuario');
+const loginRoutes = require('./routes/login');
 
 /**
  * Variables initialization
  */
 
 var app = express();
-const SERVER_PORT = 3000;
-const DB_PORT = 27017;
-const DB_URI = `mongodb://localhost:${ DB_PORT }/hospitalDB`;
+const SERVER_PORT = require('./config/config').SERVER_PORT;
+const DB_PORT = require('./config/config').DB_PORT;
+const DB_URI = require('./config/config').DB_URI;
 
 /**
- * Routes
+ * Body Parser config
  */
 
-app.get('/', (requets, response, next) => {
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-    response.status(200).json({
-        ok: true,
-        message: 'Request done correctly.',
-    })
+/**
+ * Routes/Middlewares
+ */
+app.use('/user', userRoutes);
+app.use('/login', loginRoutes);
+app.use('/', appRoutes);
 
-})
+
 
 /**
  * Data Base Connection
