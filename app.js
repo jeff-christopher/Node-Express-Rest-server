@@ -11,8 +11,13 @@ const bodyParser = require('body-parser')
  */
 
 const appRoutes = require('./routes/app');
-const userRoutes = require('./routes/usuario');
+const userRoutes = require('./routes/user');
 const loginRoutes = require('./routes/login');
+const hospitalRoutes = require('./routes/hospital');
+const doctorRoutes = require('./routes/doctor');
+const searchRoutes = require('./routes/search');
+const uploadRoutes = require('./routes/upload');
+const imageRoutes = require('./routes/image');
 
 /**
  * Variables initialization
@@ -35,8 +40,12 @@ app.use(bodyParser.json());
  */
 app.use('/user', userRoutes);
 app.use('/login', loginRoutes);
+app.use('/hospital', hospitalRoutes);
+app.use('/doctor', doctorRoutes);
+app.use('/search', searchRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/image', imageRoutes);
 app.use('/', appRoutes);
-
 
 
 /**

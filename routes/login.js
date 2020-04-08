@@ -10,7 +10,7 @@ const SEED = require('../config/config').SEED;
 /**
  * Models
  */
-const User = require('../models/usuario');
+const User = require('../models/user');
 
 
 /**

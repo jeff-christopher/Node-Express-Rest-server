@@ -14,9 +14,9 @@ const app = express();
  * Routes
  */
 
-app.get('/', (requets, response, next) => {
+app.get('/', (req, res, next) => {
 
-    response.status(200).json({
+    res.status(200).json({
         ok: true,
         message: 'Request done correctly.',
     });

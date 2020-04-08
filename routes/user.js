@@ -4,19 +4,20 @@
 
 const express = require('express');
 const bycrypt = require('bcryptjs');
-
 const mdAuthentication = require('../middlewares/authentication');
 
-/**
- * Models
- */
-const User = require('../models/usuario');
 
 /**
  * Initializations
  */
 
 const app = express();
+
+/**
+ * Models
+ */
+
+const User = require('../models/user');
 
 /**
  * User Routes
@@ -26,23 +27,43 @@ const app = express();
 
 app.get('/', (req, res, next) => {
 
-    User.find({}, 'nombre email img role').exec((err, data) => {
+    let from = req.query.from || 0;
+    from = Number(from);
 
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                message: 'Error getting users',
-                errors: err,
+
+    User.find({}, 'name email image role')
+        .limit(5)
+        .skip(from)
+        .exec((err, data) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'Error getting users',
+                    errors: err,
+                });
+            }
+
+            User.countDocuments({}, (err, count) => {
+
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        message: 'Error counting records',
+                        errors: err
+                    });
+
+                }
+
+                res.status(200).json({
+                    ok: true,
+                    users: data,
+                    total: count,
+                });
+
             });
-        }
 
-        res.status(200).json({
-            ok: true,
-            message: 'Got all users',
-            usuarios: data,
         });
-
-    });
 
 });
 
@@ -52,10 +73,10 @@ app.post('/', mdAuthentication.verifyToken, (req, res, next) => {
 
     const bodyReq = req.body;
     const user = new User({
-        nombre: bodyReq.nombre,
+        name: bodyReq.name,
         email: bodyReq.email,
         password: bycrypt.hashSync(bodyReq.password, 10),
-        img: bodyReq.img,
+        image: bodyReq.image,
         role: bodyReq.role,
     });
 
@@ -73,7 +94,7 @@ app.post('/', mdAuthentication.verifyToken, (req, res, next) => {
         res.status(201).json({
             ok: true,
             message: 'User Created',
-            usuario: userSaved,
+            user: userSaved,
             userToken: req.user,
         });
     });
@@ -86,10 +107,10 @@ app.post('/', mdAuthentication.verifyToken, (req, res, next) => {
 
 app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
 
-    const userId = req.params.id;
+    const userID = req.params.id;
     const body = req.body;
 
-    User.findById(userId, (err, user) => {
+    User.findById(userID, (err, user) => {
 
         if (err) {
             return res.status(500).json({
@@ -102,12 +123,12 @@ app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
         if (!user) {
             return res.status(400).json({
                 ok: false,
-                message: 'No user was found with this Id',
+                message: `No user was found with this Id: ${ userID }`,
                 errors: err,
             });
         }
 
-        user.nombre = body.nombre;
+        user.name = body.name;
         user.email = body.email;
         user.role = body.role;
 
@@ -139,10 +160,10 @@ app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
 
 app.delete('/:id', mdAuthentication.verifyToken, (req, res, next) => {
 
-    const userId = req.params.id;
+    const userID = req.params.id;
 
 
-    User.findByIdAndRemove(userId, (err, deletedUser) => {
+    User.findByIdAndRemove(userID, (err, deletedUser) => {
 
         if (err) {
             return res.status(500).json({
@@ -155,7 +176,7 @@ app.delete('/:id', mdAuthentication.verifyToken, (req, res, next) => {
         if (!deletedUser) {
             return res.status(400).json({
                 ok: false,
-                message: `No user with id ${userId}`,
+                message: `No user with id ${userID}`,
                 errors: err,
             });
         }
@@ -171,5 +192,9 @@ app.delete('/:id', mdAuthentication.verifyToken, (req, res, next) => {
     });
 
 });
+
+/**
+ * Export routes
+ */
 
 module.exports = app;
