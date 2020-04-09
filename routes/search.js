@@ -91,7 +91,7 @@ app.get('/collection/:collection/:search', (req, res, next) => {
  * Functions
  */
 
-const searchHospitals = (search, regex) => {
+function searchHospitals(search, regex) {
 
     return new Promise((resolve, reject) => {
 
@@ -108,7 +108,7 @@ const searchHospitals = (search, regex) => {
     });
 };
 
-const searchDoctors = (search, regex) => {
+function searchDoctors(search, regex) {
 
     return new Promise((resolve, reject) => {
 
@@ -126,7 +126,7 @@ const searchDoctors = (search, regex) => {
     });
 };
 
-const searchUsers = (search, regex) => {
+function searchUsers(search, regex) {
 
     return new Promise((resolve, reject) => {
 
